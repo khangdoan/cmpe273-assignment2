@@ -144,4 +144,4 @@ def getResults(testID):
         return jsonify(test_id=answerKey[0],subject=answerKey[1],answer_key=answerKeyDeser,submissions=submissions), 201
 
 
-    return "todo"
+    return "ERROR"
