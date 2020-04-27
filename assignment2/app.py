@@ -41,7 +41,7 @@ def closeDB(exception):
     if db: db.close()
 
 
-@app.route('/api/tests/', methods=['POST'])
+@app.route('/api/tests', methods=['POST'])
 def createTest():
     # select count(*) from test
     if request.method == 'POST':
@@ -84,10 +84,6 @@ def uploadScantrons(scantron_id=0):
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
             with app.open_resource(UPLOAD_FOLDER+'/'+file.filename) as f:
                 payload = json.load(f)
-
-            # print(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-            # payload = request.get_json()
-            # TODO: remove dummy variable
             url = f'{request.host_url}{UPLOAD_FOLDER}/{file.filename}'
             answers = payload['answers']
             buffer = ''
@@ -127,9 +123,7 @@ def uploadScantrons(scantron_id=0):
 def getResults(testID):
     if request.method == 'GET':
         answerKey = queryDB("select * from test where id = ?",[testID])[0]
-        print(answerKey,"\n")
         answers = queryDB("select * from scantron where test_id = ?",[testID])
-        print(answers)
         submissions =[]
         answerKeyDeser = {}
         for i in range(0,len(answerKey)):
@@ -143,12 +137,10 @@ def getResults(testID):
                     score = score +1
                 result[int(i+1)] = {"actual": answer[answer_off][i],
                                     "excepted": answerKey[2][i]}
-            print(answer)
             submissions.append(
                 {"scantron_id":answer[0],"scantron_url":answer[1],
                         "name": answer[2], "subject":answer[3], "score":score,"result":result}
             )
-        print(submissions,"\n")
         return jsonify(test_id=answerKey[0],subject=answerKey[1],answer_key=answerKeyDeser,submissions=submissions), 201
 
 
